@@ -25,6 +25,13 @@ class RandomWindow(sublime_plugin.WindowCommand):
         except:
             sublime.error_message('Must be two integers, separated by: - ')
 
+    def get_integer(self, input):
+        try:
+            number = int(input)
+            self.insert({'number': number})
+        except:
+            sublime.error_message('Must be an integer')
+
     def insert(self, kwargs):
         view = self.window.active_view()
         view.run_command(self.text_command, kwargs)
@@ -67,6 +74,12 @@ class RandomIntWindowCommand(RandomWindow):
         self.window.show_input_panel('Random integer from-to','1-100', self.get_range, None, None)
 
 
+class RandomLetterWindowCommand(RandomWindow):
+    def run(self):
+        self.text_command = 'random_letter'
+        self.window.show_input_panel('Number of random letters','1', self.get_integer, None, None)
+
+
 class RandomFloatWindowCommand(RandomWindow):
     def run(self):
         self.text_command = 'random_float'
@@ -104,7 +117,7 @@ class RandomFloatCommand(RandomText):
 class RandomLetterCommand(RandomText):
 
     def generate_letters(self):
-        upper_range = random.randint(3, 20)
+        upper_range = self.number
         output = ''
         for letter in range(0, upper_range):
             output += random.choice(string.ascii_letters)
@@ -112,8 +125,9 @@ class RandomLetterCommand(RandomText):
         return output
 
     def run(self, view, **kwargs):
+        self.number = kwargs['number']
         self.insert(view, self.generate_letters)
-
+    
 class RandomLetterAndNumberCommand(RandomText):
 
     def generate_letters_and_numbers(self):
